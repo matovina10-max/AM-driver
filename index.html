@@ -126,9 +126,9 @@ function card(t){
 }
 async function statusTrip(id,status){
  try{
-   await api("/rest/v1/trips?id=eq."+encodeURIComponent(id),{method:"PATCH",headers:{"Prefer":"return=minimal"},body:JSON.stringify({status})},session.access_token);
+   await api("/rest/v1/rpc/set_trip_status",{method:"POST",body:JSON.stringify({p_trip_id:id,p_status:status})},session.access_token);
    await loadTrips();
- }catch(e){alert(e.message)}
+ }catch(e){alert("Status nije promijenjen: "+e.message)}
 }
 function callP(p){if(p)location.href="tel:"+p}
 function waP(p){if(p)window.open("https://wa.me/"+p.replace(/\D/g,""),"_blank")}
