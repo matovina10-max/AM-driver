@@ -21,9 +21,8 @@ button,input,select,textarea{font:inherit} button{cursor:pointer}
 .fab{position:fixed;right:max(18px,calc((100vw - 560px)/2 + 18px));bottom:calc(20px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;border:0;background:var(--red);color:#fff;font-size:34px;box-shadow:0 10px 35px #000a}
 .sheet{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;z-index:20}.sheet.show{display:flex}.card{width:min(100%,560px);margin:auto;background:#151515;max-height:94vh;overflow:auto;border-radius:22px 22px 0 0;padding:10px 16px calc(24px + env(safe-area-inset-bottom))}
 .handle{width:42px;height:5px;border-radius:10px;background:#555;margin:3px auto 12px}.cardhead{display:flex;justify-content:space-between;align-items:center;gap:8px}.cardhead h2{font-size:21px;margin:0}.linkbtn{border:0;background:none;color:var(--blue);padding:8px 0}.save{color:var(--red);font-weight:700}
-.field{border-bottom:1px solid #303033;padding:11px 0}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:4px}.field input,.field select,.field textarea{width:100%;color:#fff;background:transparent;border:0;outline:0;font-size:16px}.field textarea{min-height:48px;resize:vertical}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.passenger{background:#1c1c1e;border-radius:14px;padding:10px;margin:10px 0}.addbtn{width:100%;padding:11px;border:1px solid #353538;border-radius:12px;background:#202022;color:var(--blue);margin:8px 0}
-.maps{width:100%;padding:13px;border:0;border-radius:13px;background:var(--blue);color:#fff;font-weight:700;margin-top:12px}
+.field{border-bottom:1px solid #303033;padding:13px 0}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:4px}.field input,.field select,.field textarea{width:100%;color:#fff;background:transparent;border:0;outline:0;font-size:17px}.field textarea{min-height:48px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.passenger{background:#1c1c1e;border-radius:16px;padding:12px 14px;margin:12px 0}.addbtn{width:100%;padding:14px;border:1px solid #3a3a3c;border-radius:14px;background:#202022;color:var(--blue);margin:10px 0;font-size:17px}.formgroup{background:#1c1c1e;border-radius:16px;padding:0 14px;margin:12px 0}.actionrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.maps,.senddriver{width:100%;padding:14px;border:0;border-radius:14px;color:#fff;font-weight:750}.maps{background:var(--blue)}.senddriver{background:var(--red)}
 .auth{min-height:100vh;display:grid;place-items:center;padding:25px}.authbox{width:min(100%,420px);background:#111;border:1px solid #222;border-radius:24px;padding:24px}.logo{font-size:28px;font-weight:850;margin-bottom:6px}.logo span{color:var(--red)}.authbox p{color:#aaa;line-height:1.4}.authbox input{width:100%;background:#1c1c1e;color:#fff;border:1px solid #333;border-radius:12px;padding:14px;margin:8px 0}.primary{width:100%;border:0;border-radius:13px;background:var(--red);color:#fff;font-weight:750;padding:14px;margin-top:8px}
 .msg{font-size:13px;color:#aaa;margin-top:12px;min-height:18px}
 .adminpanel{padding:14px 0}.sectiontitle{font-size:22px;font-weight:750;margin:12px 0}.driverrow{display:flex;justify-content:space-between;gap:12px;align-items:center;background:#1c1c1e;border-radius:13px;padding:12px;margin:8px 0}.small{font-size:12px;color:#999}.badge{font-size:11px;padding:3px 7px;border-radius:999px;background:#2c2c2e;color:#bbb}
@@ -60,19 +59,25 @@ button,input,select,textarea{font:inherit} button{cursor:pointer}
 <div class="sheet" id="rideSheet"><div class="card">
   <div class="handle"></div>
   <div class="cardhead"><button id="rideCancel" class="linkbtn">Odustani</button><h2 id="rideTitle">Nova vožnja</h2><button id="rideSave" class="linkbtn save">Spremi</button></div>
-  <div class="row">
-    <div class="field"><label>Datum</label><input id="rideDate" type="date"></div>
-    <div class="field"><label>Vrijeme</label><input id="rideTime" type="time"></div>
+  <div class="formgroup">
+    <div class="row">
+      <div class="field"><label>📅 Datum</label><input id="rideDate" type="date"></div>
+      <div class="field"><label>🕘 Vrijeme</label><input id="rideTime" type="time"></div>
+    </div>
   </div>
   <div id="passengers"></div>
-  <button id="addPassenger" class="addbtn">+ Dodaj putnika / PICK UP</button>
-  <div class="field"><label>DROP OFF</label><input id="dropoff" placeholder="Adresa ili hotel"></div>
-  <div class="field"><label>Auto</label><select id="vehicle"></select></div>
-  <div class="field"><label>Vozač</label><select id="driver"></select></div>
-  <div class="field"><label>Naručitelj prijevoza</label><select id="client"></select></div>
-  <div class="row"><div class="field"><label>Cijena (€)</label><input id="price" type="number" step="0.01"></div><div class="field"><label>Plaćanje</label><input id="payment" placeholder="keš / kartica"></div></div>
-  <div class="field"><label>Napomena</label><textarea id="note"></textarea></div>
-  <button id="mapsBtn" class="maps">🧭 Otvori rutu u Google Maps</button>
+  <button id="addPassenger" class="addbtn">＋ Dodaj putnika / PICK UP</button>
+  <div class="formgroup">
+    <div class="field"><label>⬇ DROP OFF</label><input id="dropoff" placeholder="Adresa ili hotel"></div>
+    <div class="field"><label>🚘 Auto</label><select id="vehicle"></select></div>
+    <div class="field"><label>👤 Vozač</label><select id="driver"></select></div>
+    <div class="field"><label>🏢 Naručitelj prijevoza</label><select id="client"></select></div>
+  </div>
+  <div class="formgroup">
+    <div class="row"><div class="field"><label>💶 Cijena (€)</label><input id="price" type="number" step="0.01"></div><div class="field"><label>💳 Plaćanje</label><input id="payment" placeholder="keš / kartica"></div></div>
+    <div class="field"><label>📝 Napomena</label><textarea id="note" placeholder="Dodaj napomenu (opcionalno)"></textarea></div>
+  </div>
+  <div class="actionrow"><button id="mapsBtn" class="maps">🧭 Navigacija</button><button id="sendDriverBtn" class="senddriver">📲 Pošalji vozaču</button></div>
 </div></div>
 
 <div class="sheet" id="detailSheet"><div class="card">
@@ -175,7 +180,7 @@ $('prevMonth').onclick=async()=>{viewDate=new Date(viewDate.getFullYear(),viewDa
 $('nextMonth').onclick=async()=>{viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);await loadData();renderCalendar();};
 function passengerBlock(v={}){
  const el=document.createElement('div');el.className='passenger';
- el.innerHTML=`<div class="small">Putnik / PICK UP</div><div class="field"><label>Putnik</label><input class="pname" value="${v.name||''}" placeholder="Ime putnika"></div><div class="field"><label>Broj mobitela</label><input class="pphone" value="${v.phone||''}" placeholder="+385..."></div><div class="field"><label>PICK UP</label><input class="ppickup" value="${v.pickup||''}" placeholder="Hotel / adresa"></div>`;
+ el.innerHTML=`<div class="small">Putnik / PICK UP</div><div class="field"><label>👤 Putnik</label><input class="pname" value="${v.name||''}" placeholder="Ime putnika"></div><div class="field"><label>📞 Broj mobitela</label><input class="pphone" value="${v.phone||''}" placeholder="+385..."></div><div class="field"><label>⬆ PICK UP</label><input class="ppickup" value="${v.pickup||''}" placeholder="Hotel / adresa"></div>`;
  $('passengers').appendChild(el);
 }
 $('addPassenger').onclick=()=>passengerBlock();
@@ -193,6 +198,26 @@ $('rideSave').onclick=async()=>{
  function done(){$('rideSave').disabled=false;$('rideSave').textContent='Spremi';}
 };
 $('mapsBtn').onclick=()=>openMaps(collectPassengers().map(p=>p.pickup),$('dropoff').value.trim());
+
+$('sendDriverBtn').onclick=()=>{
+ const ps=collectPassengers();
+ const driverText=$('driver').selectedOptions?.[0]?.textContent||'Vozač';
+ const clientText=$('client').selectedOptions?.[0]?.textContent||'';
+ const vehicleText=$('vehicle').selectedOptions?.[0]?.textContent||'';
+ const parts=[
+   'AM TRANSFER',
+   `${$('rideDate').value} · ${$('rideTime').value}`,
+   ...ps.map((p,i)=>`${i+1}. ${p.name||'Putnik'}${p.phone?' · '+p.phone:''}\nPICK UP: ${p.pickup||'-'}`),
+   `DROP OFF: ${$('dropoff').value.trim()||'-'}`,
+   `AUTO: ${vehicleText}`,
+   `VOZAČ: ${driverText}`,
+   clientText?`NARUČITELJ: ${clientText}`:'',
+   $('note').value.trim()?`NAPOMENA: ${$('note').value.trim()}`:''
+ ].filter(Boolean);
+ const msg=parts.join('\n\n');
+ if(navigator.share){navigator.share({title:'AM Transfer vožnja',text:msg}).catch(()=>{});}
+ else window.location.href=`sms:&body=${encodeURIComponent(msg)}`;
+};
 function openMaps(pickups,dest){if(!dest)return alert('Upiši DROP OFF.');const p=pickups.filter(Boolean);const origin=encodeURIComponent(p[0]||'');const wp=p.slice(1).map(encodeURIComponent).join('|');window.open(`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${encodeURIComponent(dest)}${wp?'&waypoints='+wp:''}`,'_blank');}
 function showDetail(r){
  const pickups=(r.stops||[]).filter(s=>s.stop_type==='pickup').sort((a,b)=>a.sort_order-b.sort_order);
