@@ -157,22 +157,45 @@ $('activateBtn').onclick=async()=>{
   const password=$('password').value;
   if(!email||!password){$('authMsg').textContent='Upiši e-mail i novu lozinku.';return;}
   if(password.length<8){$('authMsg').textContent='Lozinka mora imati najmanje 8 znakova.';return;}
+  $('authMsg').textContent='Provjeravam vozača...';
+
+  const {data:allowed,error:allowedErr}=await supabase
+    .from('allowed_users')
+    .select('email,full_name,role')
+    .eq('email',email)
+    .maybeSingle();
+
+  if(allowedErr){$('authMsg').textContent='Greška provjere pristupa: '+allowedErr.message;return;}
+  if(!allowed){$('authMsg').textContent='Ovaj e-mail nije odobren za AM Transfer. Administrator prvo mora dodati vozača.';return;}
+
   $('authMsg').textContent='Aktiviram račun...';
   const {data,error}=await supabase.auth.signUp({
     email,
     password,
-    options:{data:{full_name:email.split('@')[0]}}
+    options:{data:{full_name:allowed.full_name||email.split('@')[0]}}
   });
+
   if(error){
+    const msg=(error.message||'').toLowerCase();
+    if(msg.includes('already')||msg.includes('registered')||msg.includes('exists')){
+      const login=await supabase.auth.signInWithPassword({email,password});
+      if(!login.error){
+        $('authMsg').textContent='Račun je aktivan. Prijavljujem...';
+        session=login.data.session;
+        await boot();
+        return;
+      }
+    }
     $('authMsg').textContent='Greška: '+error.message;
     return;
   }
+
   if(data?.session){
     $('authMsg').textContent='Račun je aktiviran. Prijavljujem...';
     session=data.session;
     await boot();
   }else{
-    $('authMsg').textContent='Račun je kreiran. Ako Supabase traži potvrdu e-maila, provjeri inbox/spam. Ako ne stigne ništa, javi administratoru.';
+    $('authMsg').textContent='Račun je kreiran, ali Supabase još traži potvrdu e-maila. Administrator treba isključiti Confirm Email u Supabase Authentication postavkama.';
   }
 };
 $('resetBtn').onclick=async()=>{const email=$('email').value.trim();if(!email){$('authMsg').textContent='Upiši e-mail.';return}const{error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/?recovery=1'});$('authMsg').textContent=error?'Greška: '+error.message:'Poslan je e-mail. Otvori najnoviji link.'};
