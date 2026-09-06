@@ -56,6 +56,12 @@
 .docname{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
 .docactions{display:flex;gap:7px;flex-shrink:0}.docbtn{border:0;border-radius:9px;background:#3a3a3c;color:#fff;padding:7px 9px;font-size:12px}
 .docbtn.delete{background:#491b1b;color:#ff8b84}.uploadhint{line-height:1.45;margin-top:7px}
+.messageimport{background:#171719;border:1px solid #2c2c2e;border-radius:16px;padding:12px 14px;margin:12px 0}
+.messageimport textarea{width:100%;min-height:105px;background:transparent;color:#fff;border:0;outline:0;resize:vertical;font-size:15px;line-height:1.4}
+.messageimport .importactions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+.importbtn{border:0;border-radius:12px;padding:12px;font-weight:800;color:#fff;background:#0a84ff}
+.importbtn.secondary{background:#2c2c2e}
+.importresult{margin-top:8px;line-height:1.45}
 
 @media(max-width:420px){.month{font-size:34px}.day{min-height:82px}}
 </style>
@@ -63,7 +69,7 @@
 <body>
 <div id="auth" class="auth"><div class="authbox"><div class="logo">AM <span>TRANSFER</span></div><p>Prijava za administraciju i vozače.</p><input id="email" type="email" placeholder="ime@email.com" autocomplete="email"><input id="password" type="password" placeholder="Lozinka" autocomplete="current-password"><button id="passwordLoginBtn" class="primary">Prijava</button><button id="activateBtn" class="primary" style="background:#0a84ff">Prva prijava / aktiviraj račun</button><button id="resetBtn" class="primary" style="background:#1c1c1e;border:1px solid #333">Postavi / zaboravljena lozinka</button><button id="loginBtn" class="primary" style="background:transparent;border:0;color:#8e8e93;font-size:14px">Jednokratni link</button><div id="authMsg" class="msg"></div></div></div>
 <div id="app" class="screen hidden"><div class="top"><div class="brand">AM <span>TRANSFER</span></div><div class="topactions"><button id="todayBtn" class="iconbtn" title="Danas">●</button><button id="setPasswordBtn" class="iconbtn" title="Postavi lozinku">🔑</button><button id="adminBtn" class="iconbtn hidden" title="Vozači">👥</button><button id="logoutBtn" class="iconbtn" title="Odjava">↪</button></div></div><div class="year" id="yearLabel"></div><div class="monthrow"><div class="month" id="monthLabel"></div><div class="monthnav"><button id="prevMonth">‹</button><button id="nextMonth">›</button></div></div><div class="sub" id="who"></div><div class="toolbar"><button id="filterAll" class="pill active">Sve vožnje</button><button id="filterAssigned" class="pill">S vozačem</button><button id="filterUnassigned" class="pill">Bez vozača</button></div><div id="monthStats" class="small" style="margin:0 0 10px"></div><div id="driverDashboard" class="driverdash hidden"></div><div class="weekdays"><div>PON</div><div>UTO</div><div>SRI</div><div>ČET</div><div>PET</div><div>SUB</div><div>NED</div></div><div class="grid" id="grid"></div><button id="fab" class="fab hidden">＋</button></div>
-<div class="sheet" id="rideSheet"><div class="card"><div class="handle"></div><div class="cardhead"><button id="rideCancel" class="linkbtn">Odustani</button><h2 id="rideTitle">Nova vožnja</h2><button id="rideSave" class="linkbtn save">Spremi</button></div><div class="formgroup"><div class="row"><div class="field"><label>📅 Datum</label><input id="rideDate" type="date"></div><div class="field"><label>🕘 Vrijeme</label><input id="rideTime" type="time"></div></div></div><div id="passengers"></div><button id="addPassenger" class="addbtn">＋ Dodaj putnika / PICK UP</button><div class="formgroup"><div class="field"><label>⬇ DROP OFF</label><input id="dropoff" placeholder="Adresa ili hotel"></div><div class="field"><label>✈️ Broj leta</label><input id="flightNumber" placeholder="npr. OU 4432 / FR 1234"></div><div class="field"><label>🚘 Auto</label>
+<div class="sheet" id="rideSheet"><div class="card"><div class="handle"></div><div class="cardhead"><button id="rideCancel" class="linkbtn">Odustani</button><h2 id="rideTitle">Nova vožnja</h2><button id="rideSave" class="linkbtn save">Spremi</button></div><div class="formgroup"><div class="row"><div class="field"><label>📅 Datum</label><input id="rideDate" type="date"></div><div class="field"><label>🕘 Vrijeme</label><input id="rideTime" type="time"></div></div></div><div class="messageimport"><div class="small" style="margin-bottom:6px">📩 UČITAJ PORUKU</div><textarea id="messageImport" placeholder="Zalijepi poruku, npr. Srijeda 02.09., 12:50 Viškovo 40/5, DEDIĆ Sergej +385..."></textarea><div class="importactions"><button id="parseMessageBtn" class="importbtn">Učitaj podatke</button><button id="clearMessageBtn" class="importbtn secondary">Očisti</button></div><div id="messageImportResult" class="small importresult"></div></div><div id="passengers"></div><button id="addPassenger" class="addbtn">＋ Dodaj putnika / PICK UP</button><div class="formgroup"><div class="field"><label>⬇ DROP OFF</label><input id="dropoff" placeholder="Adresa ili hotel"></div><div class="field"><label>✈️ Broj leta</label><input id="flightNumber" placeholder="npr. OU 4432 / FR 1234"></div><div class="field"><label>🚘 Auto</label>
 <input id="vehicleName" list="vehicleOptions" placeholder="Upiši naziv automobila, npr. Mercedes E class">
 <datalist id="vehicleOptions"></datalist>
 </div><div class="field"><label>👤 Vozač</label><input id="driverName" list="driverOptions" placeholder="Upiši ili odaberi vozača"><datalist id="driverOptions"></datalist></div><div class="field"><label>🏢 Naručitelj prijevoza</label><input id="clientName" list="clientOptions" placeholder="Upiši ili odaberi naručitelja"><datalist id="clientOptions"></datalist></div><div class="field"><label>🎨 Boja naručitelja</label><input id="clientColor" type="color" value="#8E8E93" style="height:42px;padding:0"></div></div><div class="formgroup"><div class="field"><label>📌 Status</label><select id="status"><option value="assigned">Dodijeljena / nova</option><option value="accepted">Prihvaćena</option><option value="started">U tijeku</option><option value="completed">Završena</option><option value="cancelled">Otkazana</option></select></div></div><div class="formgroup"><div class="row"><div class="field"><label>💶 Cijena (€)</label><input id="price" type="number" min="0" step="0.01"></div><div class="field"><label>💳 Plaćanje</label><input id="payment" placeholder="keš / kartica"></div></div><div class="field"><label>📝 Napomena</label><textarea id="note" placeholder="Dodaj napomenu (opcionalno)"></textarea></div></div><div class="formgroup"><div class="field"><label>📎 Dokumenti</label><input id="rideDocuments" type="file" multiple accept=".pdf,.doc,.docx,image/jpeg,image/png,image/webp"><div class="small uploadhint">PDF, Word ili slika · do 10 MB po dokumentu. Na iPhoneu možeš odabrati dokument iz aplikacije Datoteke.</div><div id="pendingDocuments" class="small" style="margin-top:8px"></div></div></div><div class="actionrow"><button id="mapsBtn" class="maps">🧭 Navigacija</button><button id="sendDriverBtn" class="senddriver">📲 Pošalji vozaču</button></div></div></div>
@@ -340,13 +346,93 @@ function renderCalendar(){const y=viewDate.getFullYear(),m=viewDate.getMonth();$
  if($('monthStats'))$('monthStats').textContent=isAdmin()?`Aktivne: ${active} · Završene: ${completed} · Bez vozača: ${unassigned}`:`Aktivne: ${active} · Završene: ${completed}`;
 const first=new Date(y,m,1),offset=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),visible=filteredRides();$('grid').innerHTML='';for(let i=0;i<42;i++){const cell=document.createElement('div');cell.className='day';const n=i-offset+1;if(n>=1&&n<=days){const ds=isoDate(y,m,n);if(ds===isoDate(today.getFullYear(),today.getMonth(),today.getDate()))cell.classList.add('today');cell.innerHTML=`<div class="daynum">${n}</div>`;visible.filter(r=>r.ride_date===ds).forEach(r=>{const e=document.createElement('div');e.className=`event ${statusClass(r.status)}`;e.style.background=r.client?.color||'#636366';e.textContent=`${(r.ride_time||'').slice(0,5)} ${r.passengers?.[0]?.name||'Vožnja'}${r.flight_number?' · ✈ '+r.flight_number:''} · ${statusLabel(r.status)}${(r.driver?.full_name||r.driver_name)?' · '+(r.driver?.full_name||r.driver_name):''}`;e.onclick=()=>showDetail(r);cell.appendChild(e)})}$('grid').appendChild(cell)}}
 $('prevMonth').onclick=async()=>{viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);await loadData();renderCalendar()};$('nextMonth').onclick=async()=>{viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);await loadData();renderCalendar()};$('todayBtn').onclick=async()=>{viewDate=new Date(today.getFullYear(),today.getMonth(),1);await loadData();renderCalendar()};
+
+function normalizeImportedName(s){
+  return String(s||'').replace(/\s+/g,' ').replace(/^[,.;\s]+|[,.;\s]+$/g,'').trim();
+}
+function importedDateToIso(day,month,year){
+  let y=year?Number(year):today.getFullYear();
+  const d=Number(day),m=Number(month);
+  if(!d||!m||m>12||d>31)return '';
+  return isoDate(y,m-1,d);
+}
+function parseTransferMessage(text){
+  const raw=String(text||'').replace(/\n+/g,' ').replace(/\s+/g,' ').trim();
+  const out={date:'',rideTime:'',passengers:[],flight:'',notes:[],unresolved:[]};
+  if(!raw)return out;
+
+  const dm=raw.match(/\b(\d{1,2})\.(\d{1,2})\.(?:\s*(\d{4}))?/);
+  if(dm)out.date=importedDateToIso(dm[1],dm[2],dm[3]);
+
+  // Common Igor format: "12:50 Adresa, PREZIME Ime +385..., 13:10 Adresa, PREZIME Ime +385..."
+  const legRe=/(?:^|[,.;]\s*)(\d{1,2}:\d{2})\s+([^,.;]+?)\s*,\s*([^,+;]*?)\s*(\+\d[\d\s-]{7,18})(?=\s*[,.;]|$)/g;
+  let m;
+  while((m=legRe.exec(raw))){
+    const time=m[1];
+    const pickup=normalizeImportedName(m[2]);
+    const name=normalizeImportedName(m[3]);
+    const phone=String(m[4]||'').replace(/[^\d+]/g,'');
+    if(name||pickup){
+      out.passengers.push({time,pickup,name,phone});
+      if(!out.rideTime)out.rideTime=time;
+    }
+  }
+
+  // Fallback for messages where phone is omitted.
+  if(!out.passengers.length){
+    const simpleRe=/(?:^|[,.;]\s*)(\d{1,2}:\d{2})\s+([^,.;]+?)\s*,\s*([A-ZŠĐČĆŽ][A-Za-zÀ-žŠĐČĆŽšđčćž' -]{2,})(?=\s*[,.;]|$)/g;
+    while((m=simpleRe.exec(raw))){
+      out.passengers.push({time:m[1],pickup:normalizeImportedName(m[2]),name:normalizeImportedName(m[3]),phone:''});
+      if(!out.rideTime)out.rideTime=m[1];
+    }
+  }
+
+  const fm=raw.match(/\b(?:let|flight)\s*[:\-]?\s*([A-Za-z0-9ČĆŽŠĐčćžšđ .\/-]{0,30}?)\s+(\d{1,2}:\d{2})\b/i);
+  if(fm){
+    const label=normalizeImportedName(fm[1]).toUpperCase();
+    out.flight=(label?label+' ':'')+fm[2];
+  }
+
+  if(!out.passengers.length)out.unresolved.push('Nisam prepoznao putnike/PICK UP.');
+  if(!out.date)out.unresolved.push('Nisam prepoznao datum.');
+  if(!out.flight && /\blet\b|\bflight\b/i.test(raw))out.unresolved.push('Spominje se let, ali ga nisam sigurno prepoznao.');
+  if(!/\b(drop\s*off|odredište|aerodrom|airport|zračn[a-zčćžšđ ]+luka)\b/i.test(raw)){
+    out.unresolved.push('DROP OFF nije naveden — upiši ga ručno.');
+  }
+  return out;
+}
+function applyParsedTransferMessage(parsed){
+  if(parsed.date)$('rideDate').value=parsed.date;
+  if(parsed.rideTime)$('rideTime').value=parsed.rideTime;
+  if(parsed.flight)$('flightNumber').value=parsed.flight;
+
+  if(parsed.passengers.length){
+    $('passengers').innerHTML='';
+    parsed.passengers.forEach(p=>passengerBlock({name:p.name,phone:p.phone,pickup:p.pickup}));
+  }
+
+  const result=[];
+  if(parsed.passengers.length)result.push(`✓ ${parsed.passengers.length} putnik(a)`);
+  if(parsed.date)result.push(`✓ datum ${fmtDateHr(parsed.date)}`);
+  if(parsed.rideTime)result.push(`✓ početak ${parsed.rideTime}`);
+  if(parsed.flight)result.push(`✓ let ${parsed.flight}`);
+  if(parsed.unresolved.length)result.push('⚠ '+parsed.unresolved.join(' '));
+  $('messageImportResult').textContent=result.join(' · ');
+}
 function passengerBlock(v={}){const el=document.createElement('div');el.className='passenger';el.innerHTML=`<div class="passhead"><div class="small">Putnik / PICK UP</div><button class="removePassenger">Ukloni</button></div><div class="field"><label>👤 Putnik</label><input class="pname" value="${esc(v.name||'')}" placeholder="Ime putnika"></div><div class="field"><label>📞 Broj mobitela</label><input class="pphone" value="${esc(v.phone||'')}" placeholder="+385..."></div><div class="field"><label>⬆ PICK UP</label><input class="ppickup" value="${esc(v.pickup||'')}" placeholder="Hotel / adresa"></div>`;el.querySelector('.removePassenger').onclick=()=>{if(document.querySelectorAll('.passenger').length<=1)return toast('Mora ostati barem jedan putnik.');el.remove()};$('passengers').appendChild(el)}
 $('clientName').addEventListener('change',()=>{
  const n=$('clientName').value.trim().toLowerCase();
  const c=clients.find(x=>(x.name||'').trim().toLowerCase()===n);
  if(c&&$('clientColor'))$('clientColor').value=c.color||'#8E8E93';
 });
-$('addPassenger').onclick=()=>passengerBlock();function resetRideForm(){$('passengers').innerHTML='';passengerBlock();['dropoff','flightNumber','price','payment','note'].forEach(id=>$(id).value='');if($('driverName'))$('driverName').value='';if($('clientName'))$('clientName').value='';if($('clientColor'))$('clientColor').value='#8E8E93';if($('vehicleName'))$('vehicleName').value='';$('status').value='assigned'}
+$('addPassenger').onclick=()=>passengerBlock();
+$('parseMessageBtn').onclick=()=>{
+  const parsed=parseTransferMessage($('messageImport').value);
+  if(!$('messageImport').value.trim()){toast('Prvo zalijepi poruku.');return;}
+  applyParsedTransferMessage(parsed);
+  if(parsed.passengers.length)toast('Podaci iz poruke učitani.');
+};
+$('clearMessageBtn').onclick=()=>{$('messageImport').value='';$('messageImportResult').textContent='';};function resetRideForm(){if($('messageImport'))$('messageImport').value='';if($('messageImportResult'))$('messageImportResult').textContent='';$('passengers').innerHTML='';passengerBlock();['dropoff','flightNumber','price','payment','note'].forEach(id=>$(id).value='');if($('driverName'))$('driverName').value='';if($('clientName'))$('clientName').value='';if($('clientColor'))$('clientColor').value='#8E8E93';if($('vehicleName'))$('vehicleName').value='';$('status').value='assigned'}
 function openNewRide(){editingRide=null;pendingRideFiles=[];if($('rideDocuments'))$('rideDocuments').value='';if($('pendingDocuments'))$('pendingDocuments').textContent='';$('rideTitle').textContent='Nova vožnja';resetRideForm();$('rideDate').value=isoDate(today.getFullYear(),today.getMonth(),today.getDate());$('rideTime').value='19:00';$('rideSheet').classList.add('show')}$('fab').onclick=openNewRide;$('rideCancel').onclick=()=>{editingRide=null;$('rideSheet').classList.remove('show')};
 function collectPassengers(){return[...document.querySelectorAll('.passenger')].map((el,i)=>({name:el.querySelector('.pname').value.trim(),phone:el.querySelector('.pphone').value.trim(),pickup:el.querySelector('.ppickup').value.trim(),sort:i})).filter(x=>x.name||x.pickup)}
 function validateRide(){const ps=collectPassengers();if(!ps.length)return'Upiši barem jednog putnika.';if(ps.some(p=>!p.name||!p.pickup))return'Svaki putnik mora imati ime i PICK UP.';if(!$('rideDate').value)return'Odaberi datum.';if(!$('rideTime').value)return'Odaberi vrijeme.';if(!$('dropoff').value.trim())return'Upiši DROP OFF.';return''}
