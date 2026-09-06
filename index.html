@@ -27,7 +27,9 @@
 .driver-accept{background:#0a84ff}.driver-start{background:#ff9f0a}.driver-complete{background:#30d158}.driver-cancel{background:#7a1f1f}
 .event{border-left:4px solid transparent}
 .event.st-assigned{border-left-color:#8e8e93}.event.st-accepted{border-left-color:#0a84ff}.event.st-started{border-left-color:#ff9f0a}.event.st-completed{border-left-color:#30d158;opacity:.68}.event.st-cancelled{border-left-color:#ff453a;opacity:.48;text-decoration:line-through}
-.detailblock{background:var(--panel2);border-radius:14px;padding:14px;margin:10px 0}.detailblock b{display:block;margin-bottom:5px}.detailblock .small{line-height:1.5}.detailactions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.adminpanel{padding:14px 0}.sectiontitle{font-size:22px;font-weight:800;margin:12px 0}.driverrow{display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--panel2);border-radius:13px;padding:12px;margin:8px 0}.badge{font-size:11px;padding:3px 7px;border-radius:999px;background:#2c2c2e;color:#bbb}.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:#242426;color:#fff;border:1px solid #333;border-radius:999px;padding:10px 14px;z-index:99;opacity:0;pointer-events:none;transition:.22s;max-width:90vw;font-size:13px}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.detailblock{background:var(--panel2);border-radius:14px;padding:14px;margin:10px 0}.detailblock b{display:block;margin-bottom:5px}.detailblock .small{line-height:1.5}.detailactions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.adminpanel{padding:14px 0}.sectiontitle{font-size:22px;font-weight:800;margin:12px 0}.driverrow{display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--panel2);border-radius:13px;padding:12px;margin:8px 0}.badge{font-size:11px;padding:3px 7px;border-radius:999px;background:#2c2c2e;color:#bbb}
+.invitebtn{border:0;border-radius:10px;background:#0a84ff;color:#fff;padding:8px 11px;font-size:12px;font-weight:750}
+.driverrowactions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:#242426;color:#fff;border:1px solid #333;border-radius:999px;padding:10px 14px;z-index:99;opacity:0;pointer-events:none;transition:.22s;max-width:90vw;font-size:13px}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .driverdash{padding:6px 0 90px}
 .driverdashhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0 14px}
 .driverdashhead h2{margin:0;font-size:28px}
@@ -89,6 +91,25 @@ function fmtDriverDate(s){
  return new Intl.DateTimeFormat('hr-HR',{weekday:'long',day:'2-digit',month:'2-digit'}).format(d);
 }
 function isTodayDate(s){return s===isoDate(today.getFullYear(),today.getMonth(),today.getDate())}
+function driverInviteUrl(email){
+ const u=new URL(location.origin+'/');
+ u.searchParams.set('invite',email||'');
+ return u.toString();
+}
+async function shareDriverInvite(name,email){
+ if(!email)return alert('Ovaj vozač nema upisan e-mail.');
+ const url=driverInviteUrl(email);
+ const text=`Pozdrav ${name||''}! Dodan/a si kao vozač u AM Transfer. Otvori link, e-mail će biti već upisan. Ako još nemaš lozinku, stisni "Postavi / zaboravljena lozinka", postavi svoju lozinku i prijavi se.`;
+ try{
+   if(navigator.share){
+     await navigator.share({title:'AM Transfer – poziv vozaču',text,url});
+   }else{
+     await navigator.clipboard.writeText(`${text}\n${url}`);
+     toast('Poziv kopiran.');
+   }
+ }catch(e){}
+}
+
 
 function isAdmin(){return profile?.role==='admin'}function selectedText(id){return $(id).selectedOptions?.[0]?.textContent||''}
 function setClientFromRide(r){
@@ -134,6 +155,11 @@ $('resetBtn').onclick=async()=>{const email=$('email').value.trim();if(!email){$
 $('loginBtn').onclick=async()=>{const email=$('email').value.trim();if(!email)return;const{error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+'/?auth=1',shouldCreateUser:false}});$('authMsg').textContent=error?'Greška: '+error.message:'Provjeri e-mail i otvori najnoviji link.'};
 $('logoutBtn').onclick=()=>supabase.auth.signOut();supabase.auth.onAuthStateChange(async(e,s)=>{session=s;await boot();if(e==='PASSWORD_RECOVERY'&&s)setTimeout(()=>$('setPasswordBtn').click(),300)});
 if(location.hash.includes('access_token=')){const h=new URLSearchParams(location.hash.slice(1)),at=h.get('access_token'),rt=h.get('refresh_token');if(at&&rt){await supabase.auth.setSession({access_token:at,refresh_token:rt});history.replaceState({},'',location.pathname)}}
+const inviteEmail=new URLSearchParams(location.search).get('invite');
+if(inviteEmail){
+ $('email').value=inviteEmail;
+ $('authMsg').textContent='Pozvani ste kao vozač. Ako još nemate lozinku, odaberite "Postavi / zaboravljena lozinka".';
+}
 await new Promise(r=>setTimeout(r,200));session=(await supabase.auth.getSession()).data.session;await boot();
 async function boot(){if(!session){$('auth').classList.remove('hidden');$('app').classList.add('hidden');return}const{data:p,error}=await supabase.from('profiles').select('*').eq('id',session.user.id).single();if(error){$('authMsg').textContent=error.message;return}profile=p;$('auth').classList.add('hidden');$('app').classList.remove('hidden');$('who').textContent=`${profile.full_name||session.user.email} · ${isAdmin()?'Administrator':'Vozač'}`;$('fab').classList.toggle('hidden',!isAdmin());$('adminBtn').classList.toggle('hidden',!isAdmin());$('detailEdit').classList.toggle('hidden',!isAdmin());
 if(!isAdmin()){
@@ -375,7 +401,12 @@ $('adminBtn').onclick=async()=>{await loadAllowed();$('adminSheet').classList.ad
  }
  $('newDriverEmail').value='';$('newDriverName').value='';
  await Promise.all([loadAllowed(),loadData()]);
- toast(email?'Vozač dodan. E-mail je spremljen za pristup.':'Vozač dodan u evidenciju.');
+ if(email){
+   toast('Vozač dodan. Možeš mu odmah poslati poziv.');
+   setTimeout(()=>shareDriverInvite(name,email),250);
+ }else{
+   toast('Vozač dodan u evidenciju.');
+ }
 };async function loadAllowed(){
  const [{data:allowed,error},{data:dir,error:dirErr}]=await Promise.all([
    supabase.from('allowed_users').select('*').order('created_at'),
@@ -384,8 +415,17 @@ $('adminBtn').onclick=async()=>{await loadAllowed();$('adminSheet').classList.ad
  if(error)return alert(error.message);
  if(dirErr)return alert(dirErr.message);
  const approved=(allowed||[]).map(x=>`<div class="driverrow"><div><b>${esc(x.full_name||x.email)}</b><div class="small">${esc(x.email)}</div></div><span class="badge">pristup</span></div>`).join('');
- const roster=(dir||[]).map(x=>`<div class="driverrow"><div><b>${esc(x.name)}</b><div class="small">${x.email?esc(x.email):'Samo interna evidencija'}</div></div><span class="badge">${x.email?'evidencija + email':'evidencija'}</span></div>`).join('');
+ const roster=(dir||[]).map(x=>`<div class="driverrow">
+   <div><b>${esc(x.name)}</b><div class="small">${x.email?esc(x.email):'Samo interna evidencija'}</div></div>
+   <div class="driverrowactions">
+     <span class="badge">${x.email?'evidencija + email':'evidencija'}</span>
+     ${x.email?`<button class="invitebtn" data-invite-email="${esc(x.email)}" data-invite-name="${esc(x.name)}">📩 Pozovi</button>`:''}
+   </div>
+ </div>`).join('');
  $('allowedList').innerHTML=`<div class="small" style="margin:8px 0">Vozači za dodjelu vožnji</div>${roster||'<div class="small">Nema vozača.</div>'}<div class="small" style="margin:16px 0 8px">Korisnici s dopuštenim pristupom</div>${approved||'<div class="small">Nema dodatnih korisnika.</div>'}`;
+ $('allowedList').querySelectorAll('[data-invite-email]').forEach(btn=>{
+   btn.onclick=()=>shareDriverInvite(btn.dataset.inviteName,btn.dataset.inviteEmail);
+ });
 }
 document.querySelectorAll('.sheet').forEach(s=>s.addEventListener('click',e=>{if(e.target===s)s.classList.remove('show')}));if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
