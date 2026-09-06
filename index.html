@@ -214,9 +214,9 @@ $('fab').onclick=()=>{$('rideTitle').textContent='Nova vožnja';$('passengers').
 $('rideCancel').onclick=()=>$('rideSheet').classList.remove('show');
 function collectPassengers(){return [...document.querySelectorAll('.passenger')].map((el,i)=>({name:el.querySelector('.pname').value.trim(),phone:el.querySelector('.pphone').value.trim(),pickup:el.querySelector('.ppickup').value.trim(),sort:i})).filter(x=>x.name||x.pickup);}
 $('rideSave').onclick=async()=>{
- const ps=collectPassengers(); if(!ps.length||!$('dropoff').value.trim()||!$('driver').value)return alert('Upiši putnika, PICK UP, DROP OFF i vozača.');
+ const ps=collectPassengers(); if(!ps.length||!$('dropoff').value.trim())return alert('Upiši putnika, PICK UP i DROP OFF.');
  $('rideSave').disabled=true;$('rideSave').textContent='Spremam...';
- const {data:r,error}=await supabase.from('rides').insert({ride_date:$('rideDate').value,ride_time:$('rideTime').value,driver_id:$('driver').value,client_id:$('client').value||null,vehicle_id:$('vehicle').value||null,price:$('price').value||null,payment_note:$('payment').value.trim(),note:$('note').value.trim(),created_by:session.user.id}).select().single();
+ const {data:r,error}=await supabase.from('rides').insert({ride_date:$('rideDate').value,ride_time:$('rideTime').value,driver_id:$('driver').value||null,client_id:$('client').value||null,vehicle_id:$('vehicle').value||null,price:$('price').value||null,payment_note:$('payment').value.trim(),note:$('note').value.trim(),created_by:session.user.id}).select().single();
  if(error){alert(error.message);done();return;}
  for(const p of ps){const {data:pp,error:pe}=await supabase.from('passengers').insert({ride_id:r.id,name:p.name,phone:p.phone,sort_order:p.sort}).select().single();if(pe)continue;await supabase.from('stops').insert({ride_id:r.id,passenger_id:pp.id,stop_type:'pickup',address:p.pickup,sort_order:p.sort});}
  await supabase.from('stops').insert({ride_id:r.id,stop_type:'dropoff',address:$('dropoff').value.trim(),sort_order:999});
@@ -226,6 +226,7 @@ $('rideSave').onclick=async()=>{
 $('mapsBtn').onclick=()=>openMaps(collectPassengers().map(p=>p.pickup),$('dropoff').value.trim());
 
 $('sendDriverBtn').onclick=()=>{
+ if(!$('driver').value)return alert('Prvo odaberi vozača.');
  const ps=collectPassengers();
  const driverText=$('driver').selectedOptions?.[0]?.textContent||'Vozač';
  const clientText=$('client').selectedOptions?.[0]?.textContent||'';
